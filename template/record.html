@@ -41,13 +41,14 @@
       {{else}}
       <td class="py-3 px-6 max-w-xs">
         <ul class="list-disc">
-          {{range $index, $objective := .Record.Objectives}}
+          {{range $index, $objective := $record.Objectives}}
           <li>{{$objective}}</li>
           {{end}}
         </ul>
       </td>
+      <td class="py-3 px-6 text-center whitespace-nowrap">{{$record.Exam}}</td>
       <td class="py-3 px-6 text-center">
-        <span class="{record.color} text-violet-600 py-1 px-3 rounded-full text-xs">
+        <span class="{{$record.Color}} text-violet-600 py-1 px-3 rounded-full text-xs">
           {{$record.Outcome}}
         </span>
       </td>

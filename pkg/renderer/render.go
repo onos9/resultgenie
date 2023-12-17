@@ -150,9 +150,11 @@ func (r *Result) Render(data interface{}) error {
 		return err
 	}
 
-	err = r.Uplaod()
-	if err != nil {
-		return err
+	if r.Score.Lowest != 0 {
+		err = r.Uplaod()
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -194,6 +196,13 @@ func (r *Result) processStudentData() error {
 			return fmt.Errorf("failed to get Days Absent")
 		}
 	}
+
+	if val, ok := r.resultData["category"].(map[string]interface{}); ok {
+		if r.Student.Arm, ok = val["category_name"].(string); !ok {
+			return fmt.Errorf("failed to get category_name")
+		}
+	}
+
 	if val, ok := r.resultData["class_name"].(string); ok {
 		r.Student.ClassName = val
 	} else {
@@ -217,11 +226,6 @@ func (r *Result) processStudentData() error {
 	}
 	if r.Student.StudentPhoto, ok = r.resultData["student_photo"].(string); !ok {
 		return fmt.Errorf("failed to get student_photo")
-	}
-	if val, ok := r.resultData["category"].(map[string]interface{}); ok {
-		if r.Student.Arm, ok = val["category_name"].(string); !ok {
-			return fmt.Errorf("failed to get category_name")
-		}
 	}
 
 	if val, ok := r.resultData["admission_no"].(float64); ok {
@@ -269,26 +273,28 @@ func (r *Result) processRecordData() error {
 			if !ok {
 				return fmt.Errorf("failed to get subject_name")
 			}
-			record.Mta, ok = marks["FIRST CA"].(float64)
-			if !ok {
-				return fmt.Errorf("failed to get FIRST CA")
-			}
-			record.Ca, ok = marks["SECOND CA"].(float64)
-			if !ok {
-				return fmt.Errorf("failed to get SECOND CA")
-			}
-			record.Oral, ok = marks["ORAL"].(float64)
-			if !ok {
-				return fmt.Errorf("failed to get ORAL")
-			}
-			record.Exam, ok = marks["EXAM"].(float64)
-			if !ok {
-				return fmt.Errorf("failed to get EXAM")
-			}
-
-			record.Exam, ok = marks["EXAM"].(float64)
-			if !ok {
-				return fmt.Errorf("failed to get EXAM")
+			if r.Student.Arm == "GRADERS" {
+				record.Mta, ok = marks["FIRST CA"].(float64)
+				if !ok {
+					return fmt.Errorf("failed to get FIRST CA")
+				}
+				record.Ca, ok = marks["SECOND CA"].(float64)
+				if !ok {
+					return fmt.Errorf("failed to get SECOND CA")
+				}
+				record.Oral, ok = marks["ORAL"].(float64)
+				if !ok {
+					return fmt.Errorf("failed to get ORAL")
+				}
+				record.Exam, ok = marks["EXAM"].(float64)
+				if !ok {
+					return fmt.Errorf("failed to get EXAM")
+				}
+			} else {
+				record.Exam, ok = marks["SCORE"].(float64)
+				if !ok {
+					return fmt.Errorf("failed to get EXAM")
+				}
 			}
 
 			r.teacherId, ok = rec["teacher_id"].(float64)
@@ -298,14 +304,14 @@ func (r *Result) processRecordData() error {
 
 			subject_code, ok := rec["subject_code"].(string)
 			if !ok {
-				return fmt.Errorf("failed to get EXAM")
+				return fmt.Errorf("STUDENT ID : %f Error: failed to get subject_code", r.Student.ID)
 			}
 
 			for _, obj := range objectives {
-				class := obj["class_name"].(string)
-				code := obj["subject_code"].(string)
+				class := strings.ToUpper(obj["class_name"].(string))
+				code := strings.ToUpper(obj["subject_code"].(string))
 				if class == r.Student.ClassName && code == subject_code {
-					record.Objectives = strings.Split(obj["objective"].(string), "|")
+					record.Objectives = strings.Split(obj["text"].(string), "|")
 					break
 				}
 			}

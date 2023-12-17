@@ -27,8 +27,8 @@
       {{template "header" .}}
     </header>
     <div class="flex flex-row p-3 overflow-x-auto">{{template "studentInfo" .}}</div>
-    {{template "record" .}} {{template "score" .}} {{template "rating" .}} {{if eq .Student.Arm
-    "GRADERS"}} {{template "remark" .}} {{end}}
+    {{template "record" .}} {{template "score" .}} {{if eq .Student.Arm "GRADERS"}} {{template
+    "rating" .}} {{end}} {{template "remark" .}}
   </body>
 </html>
 {{end}}
