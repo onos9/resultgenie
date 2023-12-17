@@ -35,7 +35,7 @@ func main() {
 
 	pool.Wait()
 	api.Route()
-	err := api.Run(":3000")
+	err := api.Run(":80")
 	if err != nil {
 		panic("[Error] failed to start Gin server due to: " + err.Error())
 	}
