@@ -18,9 +18,9 @@ const RETRY_INTERVAL = 5 * time.Second
 
 type Client struct {
 	*http.Client
-	Token       string
-	host        string
-	contentType string
+	Token   string
+	host    string
+	headers map[string]string
 }
 
 type Chunk struct {
@@ -34,6 +34,7 @@ func init() {
 }
 
 func New() Client {
+	headers := map[string]string{"Content-Type": "application/json"}
 	c := &http.Client{
 		Transport: &http.Transport{
 			MaxIdleConnsPerHost: 20,
@@ -41,9 +42,9 @@ func New() Client {
 	}
 	// godotenv.Load(".env")
 	return Client{
-		Client:      c,
-		host:        os.Getenv("SERVER_HOST"),
-		contentType: "application/json",
+		Client:  c,
+		host:    os.Getenv("SERVER_HOST"),
+		headers: headers,
 	}
 }
 
@@ -61,8 +62,8 @@ func (c *Client) Send(req *http.Request) (*http.Response, error) {
 	return response, nil
 }
 
-func (c *Client) ContentType(contentType string) {
-	c.contentType = contentType
+func (c *Client) SetHeader(key, value string) {
+	c.headers[key] = value
 }
 
 func (c *Client) Get(url string, payload *bytes.Buffer) (io.ReadCloser, error) {
@@ -93,7 +94,9 @@ func (c *Client) Post(url string, payload *bytes.Buffer) (io.ReadCloser, error) 
 		return nil, fmt.Errorf("Client: could not create request: %s", err)
 	}
 
-	req.Header.Set("Content-Type", c.contentType)
+	for key, value := range c.headers {
+		req.Header.Set(key, value)
+	}
 	response, err := c.Send(req)
 	if err != nil {
 		return nil, err

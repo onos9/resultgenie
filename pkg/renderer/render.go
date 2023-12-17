@@ -73,7 +73,7 @@ func (r *Result) Uplaod() error {
 		return err
 	}
 
-	r.client.ContentType(w.FormDataContentType())
+	r.client.SetHeader("Content-Type", w.FormDataContentType())
 	_ = w.Close()
 
 	body, err := r.client.Post("/api/marks-grade", buf)
