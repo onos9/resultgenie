@@ -7,10 +7,10 @@ services:
     restart: unless-stopped
     ports:
       - "3030:3000"
+  
   repoter:
     container_name: repotman
-    build: .
-    image: repot
+    image: ghcr.io/onos9/resultgenie:latest
     restart: unless-stopped
     ports:
       - "3031:3000"
