@@ -61,7 +61,7 @@ func (c *Chromium) SendHTML(path string) ([]byte, error) {
 		return nil, err
 	}
 
-	url := "http://pdfserver/forms/chromium/convert/html"
+	url := "http://gotenberg:3000/forms/chromium/convert/html"
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
 		return nil, err
