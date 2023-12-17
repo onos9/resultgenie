@@ -1,0 +1,27 @@
+
+{{define "header"}}
+<script></script>
+
+<div class="flex space-x-3 lg:mb-0 mb-3">
+  <div class="avatar">
+    <div class="mask mask-squircle w-12 h-12">
+      <img src="https://file.llacademy.ng/api/public/dl/QyerXXgt" alt="" />
+    </div>
+  </div>
+  <div class="leading-7">
+    <div class="font-bold">{{.School.SchoolName}}</div>
+    <div class="text-sm opacity-50 flex">
+      <svg class="text-xl mr-1" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path d="M12 2C7.589 2 4 5.589 4 9.995C3.971 16.44 11.696 21.784 12 22c0 0 8.029-5.56 8-12c0-4.411-3.589-8-8-8zm0 12c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4 4z" fill="currentColor"></path></svg>
+      {{.School.SchoolCity}}, {{.School.SchoolRegion}}
+    </div>
+  </div>
+</div>
+
+<div class="flex flex-col float-right text-center leading-7">
+  <div class="font-bold float-right">{{.School.ResultDesc}}</div>
+  <div class="text-sm opacity-50 flex justify-end">
+    <div class="i-bx:calendar-alt text-xl mr-1" />
+    {{.School.VacationDate}}
+  </div>
+</div>
+{{end}}

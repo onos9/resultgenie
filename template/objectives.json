@@ -1,0 +1,211 @@
+[
+  {
+    "id": 1,
+    "exam_id": 1,
+    "class_name": "Creche",
+    "class_id": 36,
+    "subject_code": "PSED/PD",
+    "subject_id": 35,
+    "text": "Is confident to try new activities|Uses a range of materials in building and working|Moves with control and coordination"
+  },
+  {
+    "id": 2,
+    "class_name": "Creche",
+    "class_id": 36,
+    "subject_code": "PSRN",
+    "subject_id": 29,
+    "text": "Scribbles using patterns|Recognises, counts and uses numbers in order in a familiar context|Identifies shapes and sizes"
+  },
+  {
+    "id": 3,
+    "class_name": "Creche",
+    "class_id": 36,
+    "subject_code": "JP/CLL",
+    "subject_id": 30,
+    "text": "Scribbles using patterns|Recognises letters and sounds|Demonstrates and sings the jolly phonics rhymes (satipn)"
+  },
+  {
+    "id": 4,
+    "class_name": "Creche",
+    "class_id": 36,
+    "subject_code": "KUW/EAD",
+    "subject_id": 34,
+    "text": "Sings simple songs from memory|Identifies different body parts|Investigates using all of their senses|Recognises colours and shapes"
+  },
+  {
+    "id": 5,
+    "class_name": "Creche",
+    "class_id": 36,
+    "subject_code": "BIBLE",
+    "subject_id": 20,
+    "text": "Sings simple Bible songs and memory verses|Identifies main characters|Differentiates the Bible among other books"
+  },
+  {
+    "id": 6,
+    "class_name": "Preparatory",
+    "class_id": 32,
+    "subject_code": "PSED/PD",
+    "subject_id": 35,
+    "text": "Can catch and throw through fun activities|Handles objects carefully and interacts well with others|Follows simple instructions and directions.|Expresses self verbally and also using emotions|Moves with control, gross motor, skills and coordination.|Has a developing awareness of sex education."
+  },
+  {
+    "id": 7,
+    "class_name": "Preparatory",
+    "class_id": 32,
+    "subject_code": "PSRN",
+    "subject_id": 29,
+    "text": "Scribbles using patterns|Compares objects using sizes|Recognizes counts and uses numbers in order in a familiar context"
+  },
+  {
+    "id": 8,
+    "class_name": "Preparatory",
+    "class_id": 32,
+    "subject_code": "JP/CLL",
+    "subject_id": 30,
+    "text": "Scribbles using patterns|Sings to and associates sounds to objects.|Uses vocabulary in discussions|Recognises letter names and sounds"
+  },
+  {
+    "id": 9,
+    "class_name": "Preparatory",
+    "class_id": 32,
+    "subject_code": "KUW/EAD",
+    "subject_id": 34,
+    "text": "Identifies different body parts and their uses.|Moves to rhythm, songs and rhymes|Demonstrates their capacity and fire motors skills|Explores using colours and shapes"
+  },
+  {
+    "id": 10,
+    "class_name": "Preparatory",
+    "class_id": 32,
+    "subject_code": "BIBLE",
+    "subject_id": 20,
+    "text": "Recites memory verses, sings songs and Bible rhymes|Identifies main characters and retells simple events in a story (sequences stories)|Identifies the Bible among other books"
+  },
+  {
+    "id": 11,
+    "class_name": "KG1",
+    "class_id": 33,
+    "subject_code": "PSED/PD",
+    "subject_id": 35,
+    "text": "Is developing fine and gross motor skills through activities.|Has a developing knowledge of sex education|Expresses self verbally and also using facial expressions and body language.|Enjoys fun activities that involve body movements."
+  },
+  {
+    "id": 12,
+    "class_name": "KG1",
+    "class_id": 33,
+    "subject_code": "PSRN",
+    "subject_id": 29,
+    "text": "Traces and counts numbers (0-10)|Enjoys reciting number rhymes|Sorts objects according to sizes and shapes"
+  },
+  {
+    "id": 13,
+    "class_name": "KG1",
+    "class_id": 33,
+    "subject_code": "JP/CLL",
+    "subject_id": 30,
+    "text": "Demonstrates, sings to and associates sounds to objects|Develops and uses new vocabulary in conversations and discussions.|Recognises letter names and sounds"
+  },
+  {
+    "id": 14,
+    "class_name": "KG1",
+    "class_id": 33,
+    "subject_code": "KUW/EAD",
+    "subject_id": 34,
+    "text": "Identifies different body parts and their uses.|Says basic concepts learnt|Colours neatly and explores with shapes|Look at similarities and differences in patterns designs"
+  },
+  {
+    "id": 15,
+    "class_name": "KG1",
+    "class_id": 33,
+    "subject_code": "BIBLE",
+    "subject_id": 20,
+    "text": "Recites memory verses sings Bible songs and rhymes|Retells and sequences Bible stories recalling main characters, events and time."
+  },
+  {
+    "id": 16,
+    "class_name": "KG2",
+    "class_id": 34,
+    "subject_code": "PSED/PD",
+    "subject_id": 35,
+    "text": "Responds to experiences showing a range of feelings when appropriate.|Moves with control, coordination and enjoys outdoor activities involving small and large equipment.|Has a developing awareness of health and personal hygiene."
+  },
+  {
+    "id": 17,
+    "class_name": "KG2",
+    "class_id": 34,
+    "subject_code": "PSRN",
+    "subject_id": 29,
+    "text": "Uses comparative language to describe objects|Fills in missing 'even' and 'odd' numbers|Identifies, counts, says and uses number names in a familiar context.|Match and write numbers in words and figures (1-10).|Can solve practical problems involving simple addition and identify mathematical signs."
+  },
+  {
+    "id": 18,
+    "class_name": "KG2",
+    "class_id": 34,
+    "subject_code": "JP/CLL",
+    "subject_id": 30,
+    "text": "Write small and capital letters|Identify, say and write words under sounds.|Extends vocabulary exploring new words and sound.|Forms words using letter sounds and blending.|Listen to stories, songs and rhymes with enjoyment and responds appropriately.|Read simple sentences, and sight words."
+  },
+  {
+    "id": 19,
+    "class_name": "KG2",
+    "class_id": 34,
+    "subject_code": "KUW/EAD",
+    "subject_id": 34,
+    "text": "Observes and investigates materials using all of their senses spotting similarities and differences.|Uses their imagination to sing, dance and role-play|Identifies features of living things, objects and events.|Explores with colour, texture, shape, form and space.|Sings, dances and role-plays from memory."
+  },
+  {
+    "id": 20,
+    "class_name": "KG2",
+    "class_id": 34,
+    "subject_code": "BIBLE",
+    "subject_id": 20,
+    "text": "Sustains attentive listening and responds with relevant comments and questions.|Recite memory verses and sings Bible songs/rhymes.|Retell stories recalling main characters, places and events sequentially."
+  },
+  {
+    "id": 21,
+    "class_name": "GRADEK",
+    "class_id": 35,
+    "subject_code": "PSED/PD",
+    "subject_id": 35,
+    "text": "Uses a range of small and large equipment to develop fine and gross motor skills.|Sits and concentrates when appropriate; shows empathy and sensitivity to others.|Moves with control, confidence, imagination and in safety.|Responds to experiences showing a range of feelings.|Has a developing awareness of sex education."
+  },
+  {
+    "id": 22,
+    "class_name": "GRADEK",
+    "class_id": 35,
+    "subject_code": "PSRN",
+    "subject_id": 29,
+    "text": "Counts and writes numbers in words and figures sequentially.|Counting and writing numbers in multiples of 25 and 35.|Identification and writing of even and odd numbers, ordinal and cardinal numbers.|Writes numbers positions (before, between and after).|Solves practical problems using simple addition.|Orders numbers fromo smallest to biggest."
+  },
+  {
+    "id": 23,
+    "class_name": "GRADEK",
+    "class_id": 35,
+    "subject_code": "LIT/JP",
+    "subject_id": 29,
+    "text": "Write letters (capital and small) and sounds|Identify, sounds and write words under each.|Blends and reads simple sentences and sights words.|Hold pencil effectively to form recognizable letters/words."
+  },
+  {
+    "id": 24,
+    "class_name": "GRADEK",
+    "class_id": 35,
+    "subject_code": "CL/VR",
+    "subject_id": 10,
+    "text": "Listens, writes and attempts reading.|Can describe objects and things using the right vocabulary.|Extends their vocabulary exploring and uses new words.|Relates letters to objects; identifies irregular letters.|Separates vowels from consonant letters.|Listens with enjoyment and responds to stories, songs with comments.|Codes, decodes and matches letters to objects."
+  },
+  {
+    "id": 25,
+    "class_name": "GRADEK",
+    "class_id": 35,
+    "subject_code": "BIBLE",
+    "subject_id": 20,
+    "text": "Recite memory verses, sings songs and Bible rhymes.|Listens stories and responds with relevant comments and questions.|Retells stories, recalling main characters, places and events sequentially."
+  },
+  {
+    "id": 26,
+    "class_name": "GRADEK",
+    "class_id": 35,
+    "subject_code": "KUW/EAD",
+    "subject_id": 31,
+    "text": "Observes similarities and differences in patterns and investigates.|Explores with colour, text, shape, size and form.|Investigates materials using all of their senses.|Can say basic definitions, concepts and terminologies.|Identy, say features of living things and their uses.|Explore change, sing and dance from memory."
+  }
+]

@@ -1,0 +1,59 @@
+{{define "record"}}
+<script></script>
+
+<table class="min-w-max w-full table-auto mb-4 overflow-hidden">
+  <thead>
+    <tr
+      class="print:bg-violet-900 bg-neutral text-neutral-content tezprimary-content uppercase print:text-slate-300 text-xs leading-normal"
+    >
+      {{if eq .Student.Arm "GRADERS"}}
+      <th class="py-1 px-6 text-left">Subjects</th>
+      <th class="py-1 px-6 text-left">MTA1</th>
+      <th class="py-1 px-6 text-left">MTA2</th>
+      <th class="py-1 px-6 text-left">Oral Report</th>
+      <th class="py-1 px-6 text-left">Exam</th>
+      <th class="py-1 px-6 text-left">Score</th>
+      <th class="py-1 px-6 text-left">Grade</th>
+      {{else}}
+      <th class="py-1 px-6 text-left">Learning Areas</th>
+      <th class="py-1 px-6 text-left">Objectives</th>
+      <th class="py-1 px-6 text-left">Score</th>
+      <th class="py-1 px-6 text-left">Outcome</th>
+      {{end}}
+    </tr>
+  </thead>
+
+  <tbody class="print:text-gray-600 text-sm font-light">
+    {{range $i, $record := .Records}}
+    <tr class="border-b border-gray-200 hover:bg-base-300">
+      <td class="py-3 px-6 text-left max-w-xs whitespace-normal print:w-24">{{$record.Subject}}</td>
+      {{if eq $.Student.Arm "GRADERS"}}
+      <td class="py-3 px-6 text-center whitespace-nowrap">{{$record.Mta}}</td>
+      <td class="py-3 px-6 text-center whitespace-nowrap">{{$record.Ca}}</td>
+      <td class="py-3 px-6 text-center whitespace-nowrap">{{$record.Oral}}</td>
+      <td class="py-3 px-6 text-center whitespace-nowrap">{{$record.Exam}}</td>
+      <td class="py-3 px-6 text-center whitespace-nowrap">{{$record.Score}}</td>
+      <td class="py-3 px-6 text-center">
+        <span class="{{$record.Color}} text-violet-600 py-1 px-3 rounded-full text-xs">
+          {{$record.Grade}}
+        </span>
+      </td>
+      {{else}}
+      <td class="py-3 px-6 max-w-xs">
+        <ul class="list-disc">
+          {{range $index, $objective := .Record.Objectives}}
+          <li>{{$objective}}</li>
+          {{end}}
+        </ul>
+      </td>
+      <td class="py-3 px-6 text-center">
+        <span class="{record.color} text-violet-600 py-1 px-3 rounded-full text-xs">
+          {{$record.Outcome}}
+        </span>
+      </td>
+      {{end}}
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{end}}

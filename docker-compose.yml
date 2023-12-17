@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  gotenberg:
+    container_name: pdfserver
+    image: gotenberg/gotenberg:7
+    restart: unless-stopped
+    ports:
+      - "3030:3000"
+  repoter:
+    container_name: repotman
+    build: .
+    image: repot
+    restart: unless-stopped
+    ports:
+      - "3031:3000"
+    volumes:
+      - ./template:/app/template
+      - ./generated:/app/generated
