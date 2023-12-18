@@ -151,10 +151,10 @@ func (r *Result) Render(data interface{}) error {
 	}
 
 	// if r.Score.Lowest != 0 {
-	// err = r.Uplaod()
-	// if err != nil {
-	// 	return err
-	// }
+	err = r.Uplaod()
+	if err != nil {
+		return err
+	}
 	// }
 
 	return nil
