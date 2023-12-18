@@ -151,10 +151,10 @@ func (r *Result) Render(data interface{}) error {
 	}
 
 	// if r.Score.Lowest != 0 {
-	err = r.Uplaod()
-	if err != nil {
-		return err
-	}
+	// err = r.Uplaod()
+	// if err != nil {
+	// 	return err
+	// }
 	// }
 
 	return nil
@@ -174,7 +174,7 @@ func (r *Result) processSchoolData() error {
 		if val, ok := data["school_name"].(string); ok {
 			r.School.SchoolName = val
 		} else {
-			return fmt.Errorf("failed to get school_name")
+			return r.Error("failed to get school_name", nil)
 		}
 	}
 	return nil
@@ -182,42 +182,6 @@ func (r *Result) processSchoolData() error {
 
 func (r *Result) processStudentData() error {
 	var ok bool
-	if val, ok := r.resultData["custom_field"].(map[string]interface{}); ok {
-		if r.Student.Term, ok = val["Exam Type"].(string); !ok {
-			return fmt.Errorf("failed to get Exam Type")
-		}
-		if r.Student.Opened, ok = val["Days School Opened"].(string); !ok {
-			return fmt.Errorf("failed to get Days School Opened")
-		}
-		if r.Student.Present, ok = val["Days Present"].(string); !ok {
-			return fmt.Errorf("failed to get Days Present")
-		}
-		if r.Student.Absent, ok = val["Days Absent"].(string); !ok {
-			return fmt.Errorf("failed to get Days Absent")
-		}
-	}
-
-	if val, ok := r.resultData["category"].(map[string]interface{}); ok {
-		if r.Student.Arm, ok = val["category_name"].(string); !ok {
-			return fmt.Errorf("failed to get category_name")
-		}
-	}
-
-	if val, ok := r.resultData["class_name"].(string); ok {
-		r.Student.ClassName = val
-	} else {
-		return fmt.Errorf("failed to get class_name")
-	}
-	if val, ok := r.resultData["section_name"].(string); ok {
-		r.Student.SectionName = val
-	} else {
-		return fmt.Errorf("failed to get section_name")
-	}
-	if val, ok := r.resultData["academic"].(map[string]interface{}); ok {
-		if r.Student.SessionYear, ok = val["title"].(string); !ok {
-			return fmt.Errorf("failed to get academic_year")
-		}
-	}
 	if r.Student.ID, ok = r.resultData["id"].(float64); !ok {
 		return fmt.Errorf("failed to get student id")
 	}
@@ -225,13 +189,49 @@ func (r *Result) processStudentData() error {
 		return fmt.Errorf("failed to get full_name")
 	}
 	if r.Student.StudentPhoto, ok = r.resultData["student_photo"].(string); !ok {
-		return fmt.Errorf("failed to get student_photo")
+		return r.Error("failed to get student_photo", nil)
+	}
+	if val, ok := r.resultData["class_name"].(string); ok {
+		r.Student.ClassName = val
+	} else {
+		return r.Error("failed to get class_name", nil)
+	}
+	if val, ok := r.resultData["section_name"].(string); ok {
+		r.Student.SectionName = val
+	} else {
+		return r.Error("failed to get section_name", nil)
+	}
+	if val, ok := r.resultData["academic"].(map[string]interface{}); ok {
+		if r.Student.SessionYear, ok = val["title"].(string); !ok {
+			return r.Error("failed to get academic title", nil)
+		}
 	}
 
 	if val, ok := r.resultData["admission_no"].(float64); ok {
 		r.Student.AdminNo = fmt.Sprintf("%04d", int(val))
 	} else {
-		return fmt.Errorf("failed to get admission_no")
+		return r.Error("failed to get admission_no", nil)
+	}
+
+	if val, ok := r.resultData["custom_field"].(map[string]interface{}); ok {
+		if r.Student.Term, ok = val["Exam Type"].(string); !ok {
+			return r.Error("failed to get Exam Type", nil)
+		}
+		if r.Student.Opened, ok = val["Days School Opened"].(string); !ok {
+			return r.Error("failed to get Days School Opened", nil)
+		}
+		if r.Student.Present, ok = val["Days Present"].(string); !ok {
+			return r.Error("failed to get Days Present", nil)
+		}
+		if r.Student.Absent, ok = val["Days Absent"].(string); !ok {
+			return r.Error("failed to get Days Absent", nil)
+		}
+	}
+
+	if val, ok := r.resultData["category"].(map[string]interface{}); ok {
+		if r.Student.Arm, ok = val["category_name"].(string); !ok {
+			return r.Error("failed to get category_name", nil)
+		}
 	}
 
 	return nil
@@ -271,40 +271,40 @@ func (r *Result) processRecordData() error {
 
 			record.Subject, ok = rec["subject_name"].(string)
 			if !ok {
-				return fmt.Errorf("failed to get subject_name")
+				return r.Error("failed to get subject_name", &record.Subject)
 			}
 			if r.Student.Arm == "GRADERS" {
 				record.Mta, ok = marks["FIRST CA"].(float64)
 				if !ok {
-					return fmt.Errorf("failed to get FIRST CA")
+					return r.Error("failed to get FIRST CA", &record.Subject)
 				}
 				record.Ca, ok = marks["SECOND CA"].(float64)
 				if !ok {
-					return fmt.Errorf("failed to get SECOND CA")
+					return r.Error("failed to get SECOND CA", &record.Subject)
 				}
 				record.Oral, ok = marks["ORAL"].(float64)
 				if !ok {
-					return fmt.Errorf("failed to get ORAL")
+					return r.Error("failed to get ORAL", &record.Subject)
 				}
 				record.Exam, ok = marks["EXAM"].(float64)
 				if !ok {
-					return fmt.Errorf("failed to get EXAM")
+					return r.Error("failed to get EXAM", &record.Subject)
 				}
 			} else {
 				record.Exam, ok = marks["SCORE"].(float64)
 				if !ok {
-					return fmt.Errorf("failed to get EXAM")
+					return r.Error("failed to get EXAM", &record.Subject)
 				}
 			}
 
 			r.teacherId, ok = rec["teacher_id"].(float64)
 			if !ok {
-				return fmt.Errorf("failed to get teacher_id")
+				return r.Error("failed to get teacher_id", &record.Subject)
 			}
 
 			subject_code, ok := rec["subject_code"].(string)
 			if !ok {
-				return fmt.Errorf("STUDENT ID : %f Error: failed to get subject_code", r.Student.ID)
+				return r.Error("failed to get subject_code", &record.Subject)
 			}
 
 			for _, obj := range objectives {
@@ -393,4 +393,19 @@ func (r *Result) getGrade(score int) (string, string) {
 	}
 
 	return "Outstanding", "bg-red-200"
+}
+
+func (r *Result) Error(msg string, subject *string) error {
+
+	var details []string
+
+	details = append(details, fmt.Sprintf("Student: %s", r.Student.FullName))
+	details = append(details, fmt.Sprintf("Student ID: %.0f", r.Student.ID))
+	details = append(details, fmt.Sprintf("Error: %s", msg))
+
+	if subject != nil {
+		details = append(details, fmt.Sprintf("Subject: %s", *subject))
+	}
+	err := fmt.Errorf(strings.Join(details, "\n"))
+	return err
 }
