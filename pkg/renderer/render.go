@@ -185,6 +185,13 @@ func (r *Result) processStudentData() error {
 	if r.Student.ID, ok = r.resultData["id"].(float64); !ok {
 		return fmt.Errorf("failed to get student id")
 	}
+
+	if val, ok := r.resultData["admission_no"].(float64); ok {
+		r.Student.AdminNo = fmt.Sprintf("%04d", int(val))
+	} else {
+		return r.Error("failed to get admission_no", nil)
+	}
+
 	if r.Student.FullName, ok = r.resultData["full_name"].(string); !ok {
 		return fmt.Errorf("failed to get full_name")
 	}
@@ -205,12 +212,6 @@ func (r *Result) processStudentData() error {
 		if r.Student.SessionYear, ok = val["title"].(string); !ok {
 			return r.Error("failed to get academic title", nil)
 		}
-	}
-
-	if val, ok := r.resultData["admission_no"].(float64); ok {
-		r.Student.AdminNo = fmt.Sprintf("%04d", int(val))
-	} else {
-		return r.Error("failed to get admission_no", nil)
 	}
 
 	if val, ok := r.resultData["custom_field"].(map[string]interface{}); ok {
@@ -400,6 +401,7 @@ func (r *Result) Error(msg string, subject *string) error {
 	var details []string
 
 	details = append(details, fmt.Sprintf("Student: %s", r.Student.FullName))
+	details = append(details, fmt.Sprintf("Student No: %s", r.Student.AdminNo))
 	details = append(details, fmt.Sprintf("Student ID: %.0f", r.Student.ID))
 	details = append(details, fmt.Sprintf("Error: %s", msg))
 
