@@ -14,7 +14,6 @@ import (
 	"github.com/celestix/gotgproto/sessionMaker"
 	"github.com/gotd/td/telegram/message/styling"
 	"github.com/gotd/td/tg"
-	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -44,10 +43,10 @@ func Instance() (*TeleBot, error) {
 }
 
 func New() (*TeleBot, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, err
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	appID, err := strconv.Atoi(os.Getenv("APP_ID"))
 	if err != nil {
@@ -96,7 +95,7 @@ func (t *TeleBot) Run(ctx context.Context, log *zap.Logger) error {
 
 	dispatcher.AddHandler(handlers.NewCommand("start", t.start))
 	dispatcher.AddHandler(handlers.NewCommand("result", t.result))
-	
+
 	dispatcher.AddHandler(handlers.NewCallbackQuery(filters.CallbackQuery.Prefix("cb_"), t.buttonCallback))
 	dispatcher.AddHandler(handlers.NewCallbackQuery(filters.CallbackQuery.Prefix("btn1_"), t.btnFirst))
 	dispatcher.AddHandler(handlers.NewCallbackQuery(filters.CallbackQuery.Prefix("btn2_"), t.btnSecond))

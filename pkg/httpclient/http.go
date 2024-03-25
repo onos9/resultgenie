@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/joho/godotenv"
 )
 
 const MAX_RETRY = 3
@@ -38,10 +36,10 @@ func New() *HTTPClient {
 		Timeout: 10 * time.Second,
 	}
 
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	fmt.Println("Error loading .env file")
+	// }
 
 	host, ok := os.LookupEnv("SERVER_HOST")
 	if !ok {

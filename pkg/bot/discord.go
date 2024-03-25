@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/joho/godotenv"
 )
 
 var dclient *discordgo.Session
@@ -22,10 +21,10 @@ type Discord struct {
 }
 
 func NewDiscord() (*Discord, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, err
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	token := os.Getenv("DISCORD_TOKEN")
 	session, err := discordgo.New("Bot " + token)
@@ -48,10 +47,10 @@ func NewDiscord() (*Discord, error) {
 }
 
 func GetDiscordInstance() (*Discord, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, err
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	return &Discord{
 		id:        userID,
