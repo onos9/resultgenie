@@ -20,13 +20,13 @@
       }
     </style>
   </head>
-  <body class="container mx-auto w-full h-full bg-custom">
+  <body class="w-full h-full bg-custom">
     <header
-      class="lg:flex lg:justify-between lg:space-x-3 mb-8 w-full font-normal print:flex print:justify-between print:space-x-3"
+      class="lg:flex lg:justify-between mb-8 w-full font-normal print:flex print:justify-between print:space-x-3"
     >
       {{template "header" .}}
     </header>
-    <div class="flex flex-row p-3 overflow-x-auto">{{template "studentInfo" .}}</div>
+    <div class="flex flex-row">{{template "studentInfo" .}}</div>
     {{template "record" .}} {{template "score" .}} {{if eq .Student.Arm "GRADERS"}} {{template
     "rating" .}} {{end}} {{template "remark" .}}
   </body>

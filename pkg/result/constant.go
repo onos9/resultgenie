@@ -1,4 +1,4 @@
-package renderer
+package result
 
 var paths = []string{
 	"template/index.html",

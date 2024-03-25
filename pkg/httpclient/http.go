@@ -11,16 +11,17 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 const MAX_RETRY = 3
 const RETRY_INTERVAL = 5 * time.Second
 
-type Client struct {
+type HTTPClient struct {
 	*http.Client
-	Token   string
-	host    string
-	headers map[string]string
+	header http.Header
+	host   string
 }
 
 type Chunk struct {
@@ -29,27 +30,32 @@ type Chunk struct {
 	Data       []interface{} `json:"data"`
 }
 
-func init() {
-	os.Setenv("SERVER_HOST", "https://llacademy.ng")
-}
-
-func New() Client {
-	headers := map[string]string{"Content-Type": "application/json"}
+func New() *HTTPClient {
 	c := &http.Client{
 		Transport: &http.Transport{
 			MaxIdleConnsPerHost: 20,
 		},
+		Timeout: 10 * time.Second,
 	}
-	// godotenv.Load(".env")
-	return Client{
-		Client:  c,
-		host:    os.Getenv("SERVER_HOST"),
-		headers: headers,
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
+
+	host, ok := os.LookupEnv("SERVER_HOST")
+	if !ok {
+		panic("HOST not set")
+	}
+
+	return &HTTPClient{
+		Client: c,
+		host:   host,
+		header: http.Header{},
 	}
 }
 
-func (c *Client) Send(req *http.Request) (*http.Response, error) {
-	req.Header.Set("Authorization", c.Token)
+func (c *HTTPClient) Send(req *http.Request) (*http.Response, error) {
 	response, err := c.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request to API endpoint. %+v", err)
@@ -62,11 +68,11 @@ func (c *Client) Send(req *http.Request) (*http.Response, error) {
 	return response, nil
 }
 
-func (c *Client) SetHeader(key, value string) {
-	c.headers[key] = value
+func (c *HTTPClient) SetHeader(key, value string) {
+	c.header.Set(key, value)
 }
 
-func (c *Client) Get(url string, payload *bytes.Buffer) (io.ReadCloser, error) {
+func (c *HTTPClient) Get(url string, payload *bytes.Buffer) (io.ReadCloser, error) {
 	if payload == nil {
 		payload = bytes.NewBuffer([]byte{})
 	}
@@ -75,6 +81,7 @@ func (c *Client) Get(url string, payload *bytes.Buffer) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, fmt.Errorf("client: could not create request: %s", err)
 	}
+	req.Header = c.header
 	response, err := c.Send(req)
 	if err != nil {
 		return nil, err
@@ -83,7 +90,7 @@ func (c *Client) Get(url string, payload *bytes.Buffer) (io.ReadCloser, error) {
 	return response.Body, nil
 }
 
-func (c *Client) Post(url string, payload *bytes.Buffer) (io.ReadCloser, error) {
+func (c *HTTPClient) Post(url string, payload *bytes.Buffer) (io.ReadCloser, error) {
 	if payload == nil {
 		payload = bytes.NewBuffer([]byte{})
 	}
@@ -91,12 +98,10 @@ func (c *Client) Post(url string, payload *bytes.Buffer) (io.ReadCloser, error) 
 	url = fmt.Sprintf("%s%s", c.host, url)
 	req, err := http.NewRequest("POST", url, payload)
 	if err != nil {
-		return nil, fmt.Errorf("Client: could not create request: %s", err)
+		return nil, fmt.Errorf("HTTPClient: could not create request: %s", err)
 	}
 
-	for key, value := range c.headers {
-		req.Header.Set(key, value)
-	}
+	req.Header = c.header
 	response, err := c.Send(req)
 	if err != nil {
 		return nil, err
@@ -105,7 +110,7 @@ func (c *Client) Post(url string, payload *bytes.Buffer) (io.ReadCloser, error) 
 	return response.Body, nil
 }
 
-func (c *Client) GetWithStream(url string, payload *bytes.Buffer, onData func(chunk []interface{})) error {
+func (c *HTTPClient) GetWithStream(url string, payload *bytes.Buffer, onData func(chunk []interface{})) error {
 	if payload == nil {
 		payload = bytes.NewBuffer([]byte{})
 	}
@@ -120,8 +125,7 @@ func (c *Client) GetWithStream(url string, payload *bytes.Buffer, onData func(ch
 			continue
 		}
 
-		req.Header.Set("Authorization", c.Token)
-
+		req.Header = c.header
 		response, err := c.Do(req)
 		if err != nil {
 			fmt.Printf("error sending request to API endpoint. %+v", err)
@@ -176,7 +180,7 @@ func (c *Client) GetWithStream(url string, payload *bytes.Buffer, onData func(ch
 	return nil
 }
 
-func (c *Client) CreateForm(form map[string]string, buf *bytes.Buffer) (*multipart.Writer, error) {
+func (c *HTTPClient) CreateForm(form map[string]string, buf *bytes.Buffer) (*multipart.Writer, error) {
 	mp := multipart.NewWriter(buf)
 	defer mp.Close()
 	for key, val := range form {

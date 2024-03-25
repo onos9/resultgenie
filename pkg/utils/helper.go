@@ -1,11 +1,11 @@
 package utils
 
 import (
-	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"io"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -28,39 +28,35 @@ func GetLocation(address string) (city, state string) {
 	return city, state
 }
 
-func UnmarshalJason(path string) ([]map[string]interface{}, error) {
+func UnmarshalJson(path string, data interface{}) error {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer file.Close()
 	obj, err := io.ReadAll(file)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var data []map[string]interface{}
-	err = json.Unmarshal(obj, &data)
+	err = json.Unmarshal(obj, data)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return data, nil
+	return nil
 }
 
-func EncodeToBase64(v interface{}) (string, error) {
-	var buf bytes.Buffer
-	encoder := base64.NewEncoder(base64.StdEncoding, &buf)
-	err := json.NewEncoder(encoder).Encode(v)
-	if err != nil {
-		return "", err
-	}
-	encoder.Close()
-	return buf.String(), nil
+func Base64Encode(str string) string {
+	return base64.StdEncoding.EncodeToString([]byte(str))
 }
 
-func DecodeFromBase64(v interface{}, enc string) error {
-	return json.NewDecoder(base64.NewDecoder(base64.StdEncoding, strings.NewReader(enc))).Decode(v)
+func Base64Decode(str string) (string, bool) {
+	data, err := base64.StdEncoding.DecodeString(str)
+	if err != nil {
+		return "", true
+	}
+	return string(data), false
 }
 
 func StructToMap(obj interface{}) (newMap map[string]string, err error) {
@@ -74,4 +70,18 @@ func StructToMap(obj interface{}) (newMap map[string]string, err error) {
 		return
 	}
 	return
+}
+
+func GetHomeDir() (string, error) {
+	dir, ok := os.LookupEnv("SESSION_DIR")
+	if ok {
+		return filepath.Abs(dir)
+	}
+
+	dir, err := os.UserHomeDir()
+	if err != nil {
+		dir = "."
+	}
+
+	return filepath.Abs(filepath.Join(dir, ".td"))
 }

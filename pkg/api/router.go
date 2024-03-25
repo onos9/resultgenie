@@ -1,7 +1,10 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
+	"repot/pkg/bot"
+	"repot/pkg/model"
 	"repot/pkg/workerpool"
 
 	"github.com/gin-gonic/gin"
@@ -20,11 +23,31 @@ func New(r *gin.Engine, pool workerpool.WorkerPool) Api {
 }
 
 func (a *Api) Route() {
-	a.POST("/", a.process)
 
-	a.GET("/", func(c *gin.Context) {
+	a.GET("/:id", a.download)
+
+	a.GET("/bot", func(c *gin.Context) {
+		dbot, err := bot.Instance()
+		if err != nil {
+			fmt.Printf("failed to create bot: %s\n", err.Error())
+		}
+
+		data := model.Student{
+			ID:          1,
+			FullName:    "John Doe",
+			AdmissionNo: 1234,
+		}
+
+		dbot.SendComplex("api route called", data)
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
 	})
+
+	a.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
+	})
+
 }

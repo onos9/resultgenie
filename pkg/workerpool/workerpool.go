@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+var pool *workerPool
+
 // WorkerPool represents a pool of workers.
 type WorkerPool interface {
 	// AddTask adds a task to the pool.
@@ -55,10 +57,14 @@ type workerPool struct {
 	cancel context.CancelFunc
 }
 
+func GetWorkerPool() *workerPool {
+	return pool
+}
+
 // NewGoPool creates a new pool of workers.
 func New(maxWorkers int, opts ...Option) WorkerPool {
 	ctx, cancel := context.WithCancel(context.Background())
-	pool := &workerPool{
+	pool = &workerPool{
 		maxWorkers: maxWorkers,
 		// Set minWorkers to maxWorkers by default
 		minWorkers: maxWorkers,

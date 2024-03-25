@@ -1,1 +1,6 @@
 /.DS_Store
+
+.gotd
+.env
+cmd/.env
+cmd/generated

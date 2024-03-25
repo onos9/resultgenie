@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"repot/pkg/httpclient"
 	"strconv"
 )
@@ -28,11 +29,11 @@ type Options struct {
 // Chromium struct represents the Chromium module in Gotenberg.
 type Chromium struct {
 	options *Options
-	*httpclient.Client
+	*httpclient.HTTPClient
 }
 
 // NewChromium initializes a new Chromium instance.
-func New(client *httpclient.Client) *Chromium {
+func New(client *httpclient.HTTPClient) *Chromium {
 
 	return &Chromium{
 		options: &Options{
@@ -41,7 +42,7 @@ func New(client *httpclient.Client) *Chromium {
 			MarginLeft:   0.2,
 			MarginRight:  0.2,
 		},
-		Client: client,
+		HTTPClient: client,
 	}
 }
 
@@ -61,7 +62,7 @@ func (c *Chromium) SendHTML(path string) ([]byte, error) {
 		return nil, err
 	}
 
-	url := "http://gotenberg:3000/forms/chromium/convert/html"
+	url := os.Getenv("CHROMIUM_URL")
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
 		return nil, err

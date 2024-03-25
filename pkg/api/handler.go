@@ -1,50 +1,73 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"repot/pkg/auth"
-	"repot/pkg/renderer"
+	"repot/pkg/bot"
+	"repot/pkg/edusms"
+	"repot/pkg/model"
+	"repot/pkg/result"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func (a *Api) process(c *gin.Context) {
-	var data interface{}
-	jsonData, err := io.ReadAll(c.Request.Body)
+func (a *Api) download(c *gin.Context) {
+	dbot, err := bot.Instance()
 	if err != nil {
-		fmt.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	err = json.Unmarshal(jsonData, &data)
+	str := c.Query("d")
+	b, err := base64.StdEncoding.DecodeString(str)
 	if err != nil {
-		fmt.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		dbot.SendSimple("failed to decode base64 string", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid base64 string"})
+		return
 	}
 
-	a.Pool.AddTask(func() (interface{}, error) {
-		d := data.(map[string]interface{})
-		resultData, ok := d["data"]
-		if !ok {
-			return nil, fmt.Errorf("failed to get resultData data")
-		}
+	data := model.Data{}
+	err = json.Unmarshal(b, &data)
+	if err != nil {
+		dbot.SendSimple("Failed to unmarshal student data", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Srudent Data"})
+		return
+	}
 
-		r, err := renderer.New(&auth.CLIENT)
-		if err != nil {
-			return nil, err
-		}
-		err = r.Render(resultData)
-		if err != nil {
-			return nil, err
-		}
+	resp := gin.H{
+		"id":           data.Student.ID,
+		"admission_no": data.Student.AdmissionNo,
+		"full_name":    data.Student.FullName,
+		"url":          "https://llacademy.ng/student-view/" + strconv.Itoa(int(data.Student.ID)),
+	}
 
-		return nil, nil
-	})
+	client := edusms.GetInstance()
+	r, err := result.New(client)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Task added to queue",
-	})
+	err = r.Render(&data)
+	if err != nil {
+		resp["error"] = "failed to render result due to: " + err.Error()
+		dbot.SendComplex(err.Error(), data.Student)
+		c.JSON(http.StatusInternalServerError, resp)
+		return
+	}
+
+	byteFile, err := r.Generate()
+	if err != nil {
+		dbot.SendComplex(err.Error(), data.Student)
+		c.JSON(http.StatusInternalServerError, resp)
+		return
+	}
+
+	fmt.Println(c.Request.Method)
+
+	c.Header("Content-Disposition", "attachment; filename=result.pdf")
+	c.Data(http.StatusOK, "application/pdf", byteFile)
 }
