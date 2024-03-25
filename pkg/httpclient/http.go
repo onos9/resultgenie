@@ -38,7 +38,7 @@ func New() *HTTPClient {
 		Timeout: 10 * time.Second,
 	}
 
-	err := godotenv.Load(".env")
+	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
 	}
