@@ -187,7 +187,7 @@ func (t *TeleBot) response(ctx *ext.Context, update *ext.Update) error {
 	}
 
 	c := edusms.GetInstance()
-	body, err := c.Get("/exam-list/0/0", nil)
+	body, err := c.Get("/exam-list/0/0")
 	if err != nil {
 		return err
 	}
@@ -208,7 +208,7 @@ func (t *TeleBot) response(ctx *ext.Context, update *ext.Update) error {
 		pool.AddTask(func() (interface{}, error) {
 			c := edusms.GetInstance()
 			url := fmt.Sprintf("/marks-grade?id=%d&exam_type=%d", admino, int(e.ID))
-			body, err := c.Get(url, nil)
+			body, err := c.Get(url)
 			if err != nil {
 				return nil, err
 			}

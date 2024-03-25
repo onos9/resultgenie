@@ -36,6 +36,10 @@ type TeleBot struct {
 }
 
 func Instance() (*TeleBot, error) {
+	if client == nil {
+		return nil, errors.New("Bot client not initialized")
+	}
+
 	return &TeleBot{
 		Client:   client,
 		username: username,

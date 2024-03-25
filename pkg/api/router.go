@@ -24,7 +24,8 @@ func New(r *gin.Engine, pool workerpool.WorkerPool) Api {
 
 func (a *Api) Route() {
 
-	a.GET("/:id", a.download)
+	a.GET("/download", a.download)
+	a.POST("/:id", a.cache)
 
 	a.GET("/bot", func(c *gin.Context) {
 		dbot, err := bot.Instance()

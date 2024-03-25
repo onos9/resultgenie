@@ -65,12 +65,9 @@ func (c *HTTPClient) SetHeader(key, value string) {
 	c.header.Set(key, value)
 }
 
-func (c *HTTPClient) Get(url string, payload *bytes.Buffer) (io.ReadCloser, error) {
-	if payload == nil {
-		payload = bytes.NewBuffer([]byte{})
-	}
+func (c *HTTPClient) Get(url string) (io.ReadCloser, error) {
 	url = fmt.Sprintf("%s%s", c.host, url)
-	req, err := http.NewRequest("GET", url, payload)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("client: could not create request: %s", err)
 	}

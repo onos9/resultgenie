@@ -1,5 +1,9 @@
 package model
 
+type Response struct {
+	Data    Data `json:"data"`
+	Success bool `json:"success"`
+}
 type Data struct {
 	Student Student `json:"student_data"`
 	Score   Score   `json:"scores"`

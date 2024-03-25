@@ -1,10 +1,10 @@
 package api
 
 import (
-	"encoding/base64"
-	"encoding/json"
-	"fmt"
+	"crypto/md5"
+	"encoding/hex"
 	"net/http"
+	"os"
 	"repot/pkg/bot"
 	"repot/pkg/edusms"
 	"repot/pkg/model"
@@ -14,6 +14,50 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func (a *Api) cache(c *gin.Context) {
+	data := map[string]string{}
+	err := c.BindJSON(&data)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	str, ok := data["student_data"]
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_data not found"})
+		return
+	}
+
+	dbot, err := bot.Instance()
+	hash := md5.Sum([]byte(str))
+	file_id := hex.EncodeToString(hash[:])
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	f, err := os.Create(file_id)
+	if err != nil {
+		dbot.SendSimple("Failed to unmarshal student data", err.Error())
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	defer f.Close()
+
+	_, err = f.WriteString(str)
+	if err != nil {
+		dbot.SendSimple("Failed to unmarshal student data", err.Error())
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"file_id": file_id,
+	})
+
+}
+
 func (a *Api) download(c *gin.Context) {
 	dbot, err := bot.Instance()
 	if err != nil {
@@ -21,22 +65,19 @@ func (a *Api) download(c *gin.Context) {
 		return
 	}
 
-	str := c.Query("d")
-	b, err := base64.StdEncoding.DecodeString(str)
+	id := c.Query("id")
+	examId := c.Query("exam_id")
+	client := edusms.GetInstance()
+
+	d := model.Response{}
+	err = client.GetStudentData(id, examId, &d)
 	if err != nil {
-		dbot.SendSimple("failed to decode base64 string", err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid base64 string"})
+		dbot.SendSimple("Failed to get student data", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	data := model.Data{}
-	err = json.Unmarshal(b, &data)
-	if err != nil {
-		dbot.SendSimple("Failed to unmarshal student data", err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Srudent Data"})
-		return
-	}
-
+	
+	data := d.Data
 	resp := gin.H{
 		"id":           data.Student.ID,
 		"admission_no": data.Student.AdmissionNo,
@@ -44,7 +85,6 @@ func (a *Api) download(c *gin.Context) {
 		"url":          "https://llacademy.ng/student-view/" + strconv.Itoa(int(data.Student.ID)),
 	}
 
-	client := edusms.GetInstance()
 	r, err := result.New(client)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -65,8 +105,6 @@ func (a *Api) download(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, resp)
 		return
 	}
-
-	fmt.Println(c.Request.Method)
 
 	c.Header("Content-Disposition", "attachment; filename=result.pdf")
 	c.Data(http.StatusOK, "application/pdf", byteFile)
