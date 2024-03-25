@@ -1,11 +1,8 @@
 package edusms
 
 import (
-	"fmt"
 	"os"
 	"repot/pkg/httpclient"
-
-	"github.com/joho/godotenv"
 )
 
 var client *httpclient.HTTPClient
@@ -19,12 +16,7 @@ func New() (Client, error) {
 	c := Client{
 		HTTPClient: client,
 	}
-
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file")
-	}
-
+	
 	email, ok := os.LookupEnv("EMAIL")
 	if !ok {
 		panic("EMAIL not set")

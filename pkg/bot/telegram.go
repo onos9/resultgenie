@@ -43,11 +43,6 @@ func Instance() (*TeleBot, error) {
 }
 
 func New() (*TeleBot, error) {
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	appID, err := strconv.Atoi(os.Getenv("APP_ID"))
 	if err != nil {
 		return nil, errors.Wrap(err, "APP_ID not set or invalid")
