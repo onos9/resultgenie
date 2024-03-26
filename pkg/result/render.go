@@ -141,7 +141,7 @@ func (r *Result) processRecordData() error {
 		marksData := sub.Marks
 
 		score := 0
-		marks := make(map[string]interface{})
+		marks := make(map[string]float64)
 		subject_code := strings.ToUpper(sub.SubjectCode)
 		for _, m := range marksData {
 			// if m.ExamTitle == nil || m.TotalMarks == 0 {
@@ -167,10 +167,10 @@ func (r *Result) processRecordData() error {
 		record.Subject = sub.SubjectName
 		var ok bool
 		if r.Student.Arm == "GRADERS" {
-			record.Mta = marks["FIRST CA"].(float64)
-			record.Ca = marks["SECOND CA"].(float64)
-			record.Oral = marks["ORAL"].(float64)
-			record.Exam = marks["EXAM"].(float64)
+			record.Mta = marks["FIRST CA"]
+			record.Ca = marks["SECOND CA"]
+			record.Oral = marks["ORAL"]
+			record.Exam = marks["EXAM"]
 
 		} else {
 			obj := []model.Objective{}
@@ -188,13 +188,13 @@ func (r *Result) processRecordData() error {
 				}
 			}
 
-			if record.Exam, ok = marks["EXAM"].(float64); !ok {
+			if record.Exam, ok = marks["EXAM"]; !ok {
 				return fmt.Errorf("[Error]: EXAM Record for (%s) not found", sub.SubjectName)
 			}
 		}
 
 		if subject_code == "BIBLE" && r.Remark.Comment == "" {
-			return errors.New("[Error]: Teacher Remark not found, Please check your result")
+			return errors.New("[Error]: Teacher Remark not found in BIBLE, Please check your result")
 		}
 
 		r.teacherId = sub.TeacherID
