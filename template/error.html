@@ -63,7 +63,7 @@
         <p class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider text-gray-300 mt-2">
           {{.full_name}}
         </p>
-        <p class="text-lg md:text-xl lg:text-2xl text-gray-500 mt-12">Oops Somthing went wrong!</p>
+        <p class="text-lg md:text-xl lg:text-2xl text-gray-500 mt-12">Oops! Somthing went wrong</p>
         <p class="text-md md:text-lg lg:text-xl text-gray-600 mb-12 font-mono">{{.error}}</p>
         <a
           href="{{.url}}"
@@ -84,10 +84,11 @@
           </svg>
           <span>Back</span>
         </a>
+        <small class="text-xm md:text-sm lg:text-md text-gray-600 mb-12">
+          Please try again later or copy the error and send to the IT department
+        </small>
       </div>
-      <p class="text-md md:text-lg lg:text-xl text-gray-600 mb-12 font-mono">
-        Please try again later or copy the error and send to the IT department
-      </p>
+
       <div class="w-1/2 lg:h-full flex lg:items-end justify-center p-4">
         <svg
           class="w-full text-blue-600"
