@@ -60,11 +60,13 @@
         <p class="text-7xl md:text-8xl lg:text-9xl font-bold tracking-wider text-gray-300">
           {{.code}}
         </p>
-        <p class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider text-gray-300 mt-2">
-          {{.full_name}}
+        <p class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-wider text-gray-300 mt-2">
+          Oops! Somthing Went Wrong
         </p>
-        <p class="text-lg md:text-xl lg:text-2xl text-gray-500 mt-12">Oops! Somthing went wrong</p>
-        <p class="text-md md:text-lg lg:text-xl text-gray-600 mb-12 font-mono">{{.error}}</p>
+        <p class="text-lg md:text-xl lg:text-2xl text-gray-700 mt-12">
+          [Student Name]: {{.full_name}}
+        </p>
+        <p class="text-md md:text-lg lg:text-xl text-gray-500 mb-12 font-mono">{{.error}}</p>
         <a
           href="{{.url}}"
           class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-gray-100 px-4 py-2 rounded transition duration-150"

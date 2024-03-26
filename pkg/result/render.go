@@ -98,13 +98,14 @@ func (r *Result) generate() ([]byte, error) {
 
 func (r *Result) processSchoolData() error {
 	sch := r.data.Student.School
+	month := strings.Split(r.data.Student.CustomField.ExamType, "-")[1]
 	_, state := utils.GetLocation(sch.SchoolName)
 	r.School = School{
 		SchoolCity:   "Makurdi",
 		SchoolRegion: state,
 		ResultDesc:   "TERMLY SUMMARY OF PROGRESS REPORT",
 		Term:         r.Student.Term,
-		VacationDate: "December 15, 2023",
+		VacationDate: strings.Trim(month, " "),
 	}
 
 	r.School.SchoolName = sch.SchoolName
@@ -143,10 +144,6 @@ func (r *Result) processRecordData() error {
 		marks := make(map[string]interface{})
 		subject_code := strings.ToUpper(sub.SubjectCode)
 		for _, m := range marksData {
-			if m.ExamTitle == nil || m.TotalMarks == 0 {
-				return fmt.Errorf("[Error]: %s for %s can not be 0", *m.ExamTitle, sub.SubjectName)
-			}
-
 			marks[*m.ExamTitle] = m.TotalMarks
 			if subject_code == "BIBLE" && m.TeacherRemarks != "" {
 				r.Remark.Name = "Teacher Remark"
