@@ -39,7 +39,7 @@ func (a *Api) Route() {
 			AdmissionNo: 1234,
 		}
 
-		dbot.SendComplex("Api Route","failed to create bot", data)
+		dbot.SendComplex("Api Route","failed to create bot", &data)
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})

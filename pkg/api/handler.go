@@ -17,16 +17,29 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
 const (
-	DIR = "generated"
+	DIR         = "generated"
 	FILE_PREFIX = "repot-"
 )
 
 func (a *Api) cache(c *gin.Context) {
-	data := model.Data{}
-	err := c.BindJSON(&data)
+	dbot, err := bot.Instance()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	data := model.Data{}
+	err = c.BindJSON(&data)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if data.Student == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No exam data, please select Exam Type."})
+		dbot.SendSimple("No Exam Data", "Please select Exam Type")
 		return
 	}
 
@@ -34,12 +47,6 @@ func (a *Api) cache(c *gin.Context) {
 	hash := md5.Sum([]byte(id))
 	fileID := hex.EncodeToString(hash[:])
 	filename := fmt.Sprintf("%s/%s%s.json", DIR, FILE_PREFIX, fileID)
-
-	dbot, err := bot.Instance()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
 
 	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {

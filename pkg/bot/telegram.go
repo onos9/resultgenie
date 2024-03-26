@@ -116,7 +116,7 @@ func (t *TeleBot) Run(ctx context.Context, log *zap.Logger) error {
 	return nil
 }
 
-func (t *TeleBot) SendComplex(subject, msg string, data model.Student) error {
+func (t *TeleBot) SendComplex(subject, msg string, data *model.Student) error {
 	ctx := t.CreateContext()
 	res := ctx.Sender.ResolveDomain(t.username)
 	mkp := &tg.ReplyInlineMarkup{
