@@ -165,7 +165,7 @@ func (a *Api) download(c *gin.Context) {
 
 		byteFile, err = r.Render(&data)
 		if err != nil {
-			resp["error"] = "Failed to render result due to: " + err.Error()
+			resp["error"] = err.Error()
 			resp["code"] = http.StatusInternalServerError
 			dbot.SendComplex("Failed to render result", err.Error(), data.Student)
 			c.HTML(http.StatusInternalServerError, "error.html", resp)
