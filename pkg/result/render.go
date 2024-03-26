@@ -144,7 +144,7 @@ func (r *Result) processRecordData() error {
 		subject_code := strings.ToUpper(sub.SubjectCode)
 		for _, m := range marksData {
 			if m.ExamTitle == nil || m.TotalMarks == 0 {
-				return fmt.Errorf("Error: %s for %s can not be 0", *m.ExamTitle, sub.SubjectName)
+				return fmt.Errorf("[Error]: %s for %s can not be 0", *m.ExamTitle, sub.SubjectName)
 			}
 
 			marks[*m.ExamTitle] = m.TotalMarks
@@ -188,12 +188,12 @@ func (r *Result) processRecordData() error {
 			}
 
 			if record.Exam, ok = marks["EXAM"].(float64); !ok {
-				return errors.New("Error: EXAM Record not found")
+				return errors.New("[Error]: EXAM Record not found")
 			}
 		}
 
 		if subject_code == "BIBLE" && r.Remark.Comment == "" {
-			return errors.New("Error: Teacher Remark not found, Please check your result")
+			return errors.New("[Error]: Teacher Remark not found, Please check your result")
 		}
 
 		r.teacherId = sub.TeacherID
@@ -206,7 +206,7 @@ func (r *Result) processRecordData() error {
 func (r *Result) processScoreData() error {
 	score := r.data.Score
 	if score.Lowest.Average == 0 {
-		return errors.New("[Error]: Lowest Class Average can not be 0")
+		return errors.New("[Error]: Lowest Class Average can not be 0, ID: " + fmt.Sprint(score.Lowest.StudentID))
 	}
 
 	r.Score.Total = score.Total
