@@ -144,6 +144,10 @@ func (r *Result) processRecordData() error {
 		marks := make(map[string]interface{})
 		subject_code := strings.ToUpper(sub.SubjectCode)
 		for _, m := range marksData {
+			// if m.ExamTitle == nil || m.TotalMarks == 0 {
+			// 	return fmt.Errorf("[Error]: %s for %s can not be 0", *m.ExamTitle, sub.SubjectName)
+			// }
+
 			marks[*m.ExamTitle] = m.TotalMarks
 			if subject_code == "BIBLE" && m.TeacherRemarks != "" {
 				r.Remark.Name = "Teacher Remark"
@@ -185,7 +189,7 @@ func (r *Result) processRecordData() error {
 			}
 
 			if record.Exam, ok = marks["EXAM"].(float64); !ok {
-				return errors.New("[Error]: EXAM Record not found")
+				return fmt.Errorf("[Error]: EXAM Record for (%s) not found", sub.SubjectName)
 			}
 		}
 
