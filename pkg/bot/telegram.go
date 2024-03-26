@@ -7,16 +7,21 @@ import (
 	"os"
 	"repot/pkg/model"
 	"strconv"
+	"time"
 
 	"github.com/celestix/gotgproto"
 	"github.com/celestix/gotgproto/dispatcher/handlers"
 	"github.com/celestix/gotgproto/dispatcher/handlers/filters"
 	"github.com/celestix/gotgproto/sessionMaker"
+	"github.com/gotd/contrib/middleware/floodwait"
+	"github.com/gotd/contrib/middleware/ratelimit"
+	"github.com/gotd/td/telegram"
 	"github.com/gotd/td/telegram/message/styling"
 	"github.com/gotd/td/tg"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"golang.org/x/time/rate"
 )
 
 var client *gotgproto.Client
@@ -70,9 +75,21 @@ func New() (*TeleBot, error) {
 	clientType := gotgproto.ClientType{
 		BotToken: botToken,
 	}
+
+	waiter := floodwait.NewWaiter().WithCallback(func(ctx context.Context, wait floodwait.FloodWait) {
+		fmt.Printf("Waiting for flood, dur: %d\n", wait.Duration)
+	})
+
+	ratelimiter := ratelimit.New(rate.Every(time.Millisecond*100), 30)
 	opts := &gotgproto.ClientOpts{
-		InMemory: true,
-		Session:  sessionMaker.SimpleSession(),
+		InMemory:    true,
+		Session:     sessionMaker.SimpleSession(),
+		Middlewares: []telegram.Middleware{waiter, ratelimiter},
+		RunMiddleware: func(origRun func(ctx context.Context, f func(ctx context.Context) error) (err error), ctx context.Context, f func(ctx context.Context) (err error)) (err error) {
+			return origRun(ctx, func(ctx context.Context) error {
+				return waiter.Run(ctx, f)
+			})
+		},
 	}
 
 	client, err = gotgproto.NewClient(appID, appHash, clientType, opts)
