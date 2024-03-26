@@ -116,7 +116,7 @@ func (t *TeleBot) Run(ctx context.Context, log *zap.Logger) error {
 	return nil
 }
 
-func (t *TeleBot) SendComplex(m string, data model.Student) error {
+func (t *TeleBot) SendComplex(subject, msg string, data model.Student) error {
 	ctx := t.CreateContext()
 	res := ctx.Sender.ResolveDomain(t.username)
 	mkp := &tg.ReplyInlineMarkup{
@@ -133,9 +133,9 @@ func (t *TeleBot) SendComplex(m string, data model.Student) error {
 	}
 
 	options := []styling.StyledTextOption{
-		styling.Bold("Internal Server Error\n\n"),
+		styling.Bold(fmt.Sprintf("%s\n\n", subject)),
 		styling.Blockquote(fmt.Sprintf("Student Name: %s\nStudent ID: %d\nAdmission No: %d\n", data.FullName, int(data.ID), int(data.AdmissionNo))),
-		styling.Code(m),
+		styling.Code(msg),
 	}
 
 	res.Markup(mkp)

@@ -7,8 +7,8 @@ import (
 	"repot/pkg/model"
 )
 
-func (c *Client) GetStudentData(id, examId string, data *model.Response) error {
-	url := fmt.Sprintf("/marks-grade?id=%s&exam_id=%s", id, examId)
+func (c *Client) GetStudentData(id string, data *model.Response) error {
+	url := fmt.Sprintf("/marks-grade?id=%s", id)
 	body, err := c.Get(url)
 	if err != nil {
 		return err

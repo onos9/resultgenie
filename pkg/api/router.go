@@ -24,8 +24,8 @@ func New(r *gin.Engine, pool workerpool.WorkerPool) Api {
 
 func (a *Api) Route() {
 
-	a.GET("/download", a.download)
-	a.POST("/:id", a.cache)
+	a.GET("/download/:id", a.download)
+	a.POST("/cache", a.cache)
 
 	a.GET("/bot", func(c *gin.Context) {
 		dbot, err := bot.Instance()
@@ -39,13 +39,13 @@ func (a *Api) Route() {
 			AdmissionNo: 1234,
 		}
 
-		dbot.SendComplex("api route called", data)
+		dbot.SendComplex("Api Route","failed to create bot", data)
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
 	})
 
-	a.GET("/ping", func(c *gin.Context) {
+	a.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})

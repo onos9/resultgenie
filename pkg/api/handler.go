@@ -3,59 +3,100 @@ package api
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"repot/pkg/bot"
-	"repot/pkg/edusms"
 	"repot/pkg/model"
 	"repot/pkg/result"
+	"repot/pkg/workerpool"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
+const (
+	DIR = "generated"
+	FILE_PREFIX = "repot-"
+)
 
 func (a *Api) cache(c *gin.Context) {
-	data := map[string]string{}
+	data := model.Data{}
 	err := c.BindJSON(&data)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	str, ok := data["student_data"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "student_data not found"})
-		return
-	}
-
-	dbot, err := bot.Instance()
-	hash := md5.Sum([]byte(str))
-	file_id := hex.EncodeToString(hash[:])
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	f, err := os.Create(file_id)
+	id := strconv.Itoa(int(data.Student.ID))
+	hash := md5.Sum([]byte(id))
+	fileID := hex.EncodeToString(hash[:])
+	filename := fmt.Sprintf("%s/%s%s.json", DIR, FILE_PREFIX, fileID)
+
+	dbot, err := bot.Instance()
 	if err != nil {
-		dbot.SendSimple("Failed to unmarshal student data", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		dbot.SendSimple("Failed to open file for writing: "+fileID, err.Error())
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	defer f.Close()
 
-	_, err = f.WriteString(str)
+	byteFile, err := json.Marshal(data)
 	if err != nil {
-		dbot.SendSimple("Failed to unmarshal student data", err.Error())
+		dbot.SendComplex("Failed to write student data", err.Error(), data.Student)
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"file_id": file_id,
+	_, err = f.Write(byteFile)
+	if err != nil {
+		dbot.SendComplex("Failed to write PDF", err.Error(), data.Student)
+		return
+	}
+
+	pool := workerpool.GetWorkerPool()
+	pool.AddTask(func() (interface{}, error) {
+		r, err := result.New()
+		if err != nil {
+			return nil, nil
+		}
+		byteFile, err = r.Render(&data)
+		if err != nil {
+			dbot.SendComplex("Failed to render PDF", err.Error(), data.Student)
+			return nil, nil
+		}
+
+		f, err := os.OpenFile(filename, os.O_WRONLY|os.O_TRUNC, 0644)
+		if err != nil {
+			dbot.SendComplex("Failed to open file for writing PDF", err.Error(), data.Student)
+			return nil, err
+		}
+		defer f.Close()
+
+		name := fmt.Sprintf("%s/%s%s.pdf", DIR, FILE_PREFIX, fileID)
+		err = os.Rename(filename, name)
+		if err != nil {
+			dbot.SendComplex("Failed to rename file to .pdf", err.Error(), data.Student)
+			return nil, err
+		}
+		_, err = f.Write(byteFile)
+		if err != nil {
+			dbot.SendComplex("Failed to write PDF", err.Error(), data.Student)
+			return nil, err
+		}
+
+		return nil, nil
 	})
 
+	c.AbortWithStatus(http.StatusOK)
 }
 
 func (a *Api) download(c *gin.Context) {
@@ -65,44 +106,66 @@ func (a *Api) download(c *gin.Context) {
 		return
 	}
 
-	id := c.Query("id")
-	examId := c.Query("exam_id")
-	client := edusms.GetInstance()
+	id := c.Param("id")
+	hash := md5.Sum([]byte(id))
+	fileID := hex.EncodeToString(hash[:])
+	filename := fmt.Sprintf("%s/%s%s.pdf", DIR, FILE_PREFIX, fileID)
 
-	d := model.Response{}
-	err = client.GetStudentData(id, examId, &d)
+	f, err := os.Open(filename)
 	if err != nil {
-		dbot.SendSimple("Failed to get student data", err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		filename = fmt.Sprintf("%s/%s%s.json", DIR, FILE_PREFIX, fileID)
+		f, err = os.Open(filename)
+		if err != nil {
+			dbot.SendSimple("Failed to open file for writing PDF, ID: "+id, err.Error())
+			return
+		}
 	}
-	
-	data := d.Data
-	resp := gin.H{
-		"id":           data.Student.ID,
-		"admission_no": data.Student.AdmissionNo,
-		"full_name":    data.Student.FullName,
-		"url":          "https://llacademy.ng/student-view/" + strconv.Itoa(int(data.Student.ID)),
+	defer f.Close()
+
+	var byteFile []byte
+	data := model.Data{}
+	ext := filepath.Ext(f.Name())
+	if ext == ".pdf" {
+		byteFile, err = io.ReadAll(f)
+		if err != nil {
+			dbot.SendSimple("Failed to read PDF content, ID: "+id, err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read PDF content"})
+			return
+		}
+	} else if ext == ".json" {
+		decoder := json.NewDecoder(f)
+		err = decoder.Decode(&data)
+		if err != nil {
+			dbot.SendSimple("Failed to decode JSON data", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode JSON data"})
+			return
+		}
+
+		resp := gin.H{
+			"id":           data.Student.ID,
+			"admission_no": data.Student.AdmissionNo,
+			"full_name":    data.Student.FullName,
+			"url":          "https://llacademy.ng/student-view/" + strconv.Itoa(int(data.Student.ID)),
+		}
+
+		r, err := result.New()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		byteFile, err = r.Render(&data)
+		if err != nil {
+			resp["error"] = "failed to render result due to: " + err.Error()
+			dbot.SendComplex("Failed to render result", err.Error(), data.Student)
+			c.JSON(http.StatusInternalServerError, resp)
+			return
+		}
 	}
 
-	r, err := result.New(client)
+	err = os.Remove(filename)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = r.Render(&data)
-	if err != nil {
-		resp["error"] = "failed to render result due to: " + err.Error()
-		dbot.SendComplex(err.Error(), data.Student)
-		c.JSON(http.StatusInternalServerError, resp)
-		return
-	}
-
-	byteFile, err := r.Generate()
-	if err != nil {
-		dbot.SendComplex(err.Error(), data.Student)
-		c.JSON(http.StatusInternalServerError, resp)
+		dbot.SendComplex("Failed to rename file to .pdf", err.Error(), data.Student)
 		return
 	}
 

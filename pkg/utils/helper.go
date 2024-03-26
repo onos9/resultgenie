@@ -1,13 +1,19 @@
 package utils
 
 import (
+	"crypto/md5"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
+
+	"golang.org/x/exp/constraints"
 )
 
 func GetLocation(address string) (city, state string) {
@@ -84,4 +90,25 @@ func GetHomeDir() (string, error) {
 	}
 
 	return filepath.Abs(filepath.Join(dir, ".td"))
+}
+
+type Number interface {
+	constraints.Integer | constraints.Float | string
+}
+
+func GenerateHash(input any) (string, error) {
+    var str string
+
+    switch v := input.(type) {
+    case string:
+        str = v
+    case int:
+        str = strconv.Itoa(v)
+    case float64:
+        str = strconv.FormatFloat(v, 'f', -1, 64)
+    default:
+        return "", errors.New("unsupported input type")
+    }
+    hash := md5.Sum([]byte(str))
+    return hex.EncodeToString(hash[:]), nil
 }
