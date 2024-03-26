@@ -39,15 +39,20 @@ func (a *Api) Route() {
 			AdmissionNo: 1234,
 		}
 
-		dbot.SendComplex("Api Route","failed to create bot", &data)
+		dbot.SendComplex("Api Route", "failed to create bot", &data)
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
 	})
 
 	a.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
+		c.HTML(http.StatusOK, "error.html", gin.H{
+			"id":           2,
+			"admission_no": 1234,
+			"full_name":    "John Doe",
+			"url":          "https://llacademy.ng/student-view/2",
+			"code":         http.StatusInternalServerError,
+			"error":        "Failed to Create Bot",
 		})
 	})
 

@@ -153,6 +153,8 @@ func (a *Api) download(c *gin.Context) {
 			"admission_no": data.Student.AdmissionNo,
 			"full_name":    data.Student.FullName,
 			"url":          "https://llacademy.ng/student-view/" + strconv.Itoa(int(data.Student.ID)),
+			"code":         http.StatusOK,
+			"error":        "",
 		}
 
 		r, err := result.New()
@@ -163,9 +165,10 @@ func (a *Api) download(c *gin.Context) {
 
 		byteFile, err = r.Render(&data)
 		if err != nil {
-			resp["error"] = "failed to render result due to: " + err.Error()
+			resp["error"] = "Failed to render result due to: " + err.Error()
+			resp["code"] = http.StatusInternalServerError
 			dbot.SendComplex("Failed to render result", err.Error(), data.Student)
-			c.JSON(http.StatusInternalServerError, resp)
+			c.HTML(http.StatusInternalServerError, "error.html", resp)
 			return
 		}
 	}

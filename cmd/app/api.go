@@ -10,6 +10,7 @@ import (
 
 func (a *App) apiServer() {
 	router := gin.Default()
+	router.LoadHTMLFiles("template/error.html")
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"PUT", "PATCH", "OPTIONS", "GET", "POST", "DELETE"},
