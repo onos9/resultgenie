@@ -181,6 +181,7 @@ func (a *Api) download(c *gin.Context) {
 			dbot.SendComplex("Failed to rename file to .pdf", err.Error(), data.Student)
 			return
 		}
+		fmt.Println("File deleted: " + filename)
 	})
 
 	c.Header("Content-Disposition", "attachment; filename=result.pdf")
