@@ -188,7 +188,7 @@ func (r *Result) processRecordData() error {
 				}
 			}
 
-			if record.Exam, ok = marks["EXAM"]; !ok {
+			if record.Exam, ok = marks["SCORE"]; !ok {
 				return fmt.Errorf("[Error]: EXAM Record for (%s) not found", sub.SubjectName)
 			}
 		}
@@ -224,7 +224,7 @@ func (r *Result) processScoreData() error {
 }
 
 func (r *Result) processRatingData() error {
-	var data map[string]interface{}
+	var data map[string]string
 	inrec, err := json.Marshal(r.data.Student.CustomField)
 	if err != nil {
 		return err
@@ -239,11 +239,11 @@ func (r *Result) processRatingData() error {
 			continue
 		}
 
-		if val != nil {
+		if val != "" {
 			rating := Rating{
 				Attribute: key,
 			}
-			rate, err := strconv.Atoi(val.(string))
+			rate, err := strconv.Atoi(val)
 			if err != nil {
 				return err
 			}

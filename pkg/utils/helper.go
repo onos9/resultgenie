@@ -97,18 +97,26 @@ type Number interface {
 }
 
 func GenerateHash(input any) (string, error) {
-    var str string
+	var str string
 
-    switch v := input.(type) {
-    case string:
-        str = v
-    case int:
-        str = strconv.Itoa(v)
-    case float64:
-        str = strconv.FormatFloat(v, 'f', -1, 64)
-    default:
-        return "", errors.New("unsupported input type")
-    }
-    hash := md5.Sum([]byte(str))
-    return hex.EncodeToString(hash[:]), nil
+	switch v := input.(type) {
+	case string:
+		str = v
+	case int:
+		str = strconv.Itoa(v)
+	case float64:
+		str = strconv.FormatFloat(v, 'f', -1, 64)
+	default:
+		return "", errors.New("unsupported input type")
+	}
+	hash := md5.Sum([]byte(str))
+	return hex.EncodeToString(hash[:]), nil
+}
+
+func DeleteFile(path string) error {
+	err := os.Remove(path)
+	if err != nil {
+		return err
+	}
+	return nil
 }

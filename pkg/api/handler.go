@@ -12,8 +12,10 @@ import (
 	"repot/pkg/bot"
 	"repot/pkg/model"
 	"repot/pkg/result"
+	"repot/pkg/utils"
 	"repot/pkg/workerpool"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -173,11 +175,13 @@ func (a *Api) download(c *gin.Context) {
 		}
 	}
 
-	err = os.Remove(filename)
-	if err != nil {
-		dbot.SendComplex("Failed to rename file to .pdf", err.Error(), data.Student)
-		return
-	}
+	time.AfterFunc(5*time.Minute, func() {
+		err = utils.DeleteFile(filename)
+		if err != nil {
+			dbot.SendComplex("Failed to rename file to .pdf", err.Error(), data.Student)
+			return
+		}
+	})
 
 	c.Header("Content-Disposition", "attachment; filename=result.pdf")
 	c.Data(http.StatusOK, "application/pdf", byteFile)
